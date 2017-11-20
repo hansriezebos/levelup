@@ -22,7 +22,7 @@ pipeline {
         always {
             junit '**/target/*.xml'
         }
-        success {
+        succeeded {
             echo 'The Pipeline succeeded :)'
         }
         failure {
