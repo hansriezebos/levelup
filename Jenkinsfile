@@ -18,4 +18,15 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            junit '**/target/*.xml'
+        }
+        success {
+            echo 'The Pipeline succeeded :)'
+        }
+        failure {
+            echo 'The Pipeline failed :('
+        }
+    }
 }
