@@ -23,7 +23,7 @@ pipeline {
             echo 'post'
             //junit '**/target/*.xml'
         }
-        succeeded {
+        success {
             echo 'The Pipeline succeeded :)'
         }
         failure {
