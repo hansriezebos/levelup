@@ -20,6 +20,7 @@ pipeline {
     }
     post {
         always {
+            echo 'post'
             //junit '**/target/*.xml'
         }
         succeeded {
