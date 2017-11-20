@@ -20,8 +20,8 @@ jdk 'JDK8'
         }
         stage('Deploy') {
             steps {
-                input message:'Approve deployment?', submitter: 'hans'
                 timeout(time: 3, unit: 'MINUTES') {
+                    input message:'Approve deployment?', submitter: 'hans'
                     retry(3) {
                         sh 'mvn test'
                     }
