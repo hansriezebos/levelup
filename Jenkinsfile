@@ -20,7 +20,7 @@ pipeline {
     }
     post {
         always {
-            junit '**/target/*.xml'
+            //junit '**/target/*.xml'
         }
         succeeded {
             echo 'The Pipeline succeeded :)'
