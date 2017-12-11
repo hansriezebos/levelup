@@ -1,12 +1,6 @@
 node {
     def app
 
-    tools {
-        maven 'M3'
-        jdk 'JDK8'
-        docker 'DOCKER'
-    }
-
     stage('Clone repository') {
         /* Let's make sure we have the repository cloned to our workspace */
 
