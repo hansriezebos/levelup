@@ -1,17 +1,36 @@
-node("docker") {
-    docker.withRegistry('https://quay.io/repository/hansriezebos/spoed_hap', '<<your-docker-registry-credentials-id>>') {
-    
-        git url: "https://github.com/hansriezebos/levelup.git", credentialsId: 'fd2241d2-19b7-4263-a222-3d0f0de53d2a	'
-    
-        sh "git rev-parse HEAD > .git/commit-id"
-        def commit_id = readFile('.git/commit-id').trim()
-        println commit_id
-    
-        stage "build"
-        def app = docker.build "my-project-name"
-    
-        stage "publish"
-        app.push 'master'
-        app.push "${commit_id}"
+node {
+    def app
+
+    stage('Clone repository') {
+        /* Let's make sure we have the repository cloned to our workspace */
+
+        checkout scm
+    }
+
+    stage('Build image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
+
+        app = docker.build("hap-http/app")
+    }
+
+    stage('Test image') {
+        /* Ideally, we would run a test framework against our image.
+         * For this example, we're using a Volkswagen-type approach ;-) */
+
+        app.inside {
+            sh 'echo "Tests passed"'
+        }
+    }
+
+    stage('Push image') {
+        /* Finally, we'll push the image with two tags:
+         * First, the incremental build number from Jenkins
+         * Second, the 'latest' tag.
+         * Pushing multiple tags is cheap, as all the layers are reused. */
+        docker.withRegistry('https://quay.io/repository/hansriezebos/spoed_hap', 'quay-io-credentials') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
     }
 }
