@@ -20,20 +20,15 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                try {
-                   timeout(time: 3, unit: 'MINUTES') {
-                    input message:'Approve deployment?', submitter: 'hans'
-                   }
-                   mvn isntall
+                timeout(time:5, unit:'DAYS') {
+                    input message:'Approve deployment?'
                 }
-                catch (err) { // timeout reached or input false
-                   def user = err.getCauses()[0].getUser()
-                   if('SYSTEM' == user.toString()) { // SYSTEM means timeout.
-                       didTimeout = true
-                   } else {
-                       userInput = false
-                       echo "Aborted by: [${user}]"
-                   }
+                retry(3) {
+                    echo 'Deploying....'
+                }
+
+                timeout(time: 3, unit: 'MINUTES') {
+                    echo "Done health check!"
                 }
             }
         }
