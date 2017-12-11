@@ -1,48 +1,17 @@
-pipeline {
-    agent any
+node("docker") {
+    docker.withRegistry('https://quay.io/repository/hansriezebos/spoed_hap', '<<your-docker-registry-credentials-id>>') {
     
-    tools {
-        maven 'M3'
-        jdk 'JDK8'
-    }
-
-
-    stages {
-        stage('Build') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'mvn verify -Pintegrationtest'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                timeout(time:5, unit:'DAYS') {
-                    input message:'Approve deployment?'
-                }
-                retry(3) {
-                    echo 'Deploying....'
-                }
-
-                timeout(time: 3, unit: 'MINUTES') {
-                    echo "Done health check!"
-                }
-            }
-        }
-    }
-    post {
-        always {
-            echo 'post'
-            //junit '**/target/*.xml'
-        }
-        success {
-            echo 'The Pipeline succeeded :)'
-        }
-        failure {
-            echo 'The Pipeline failed :('
-        }
+        git url: "https://github.com/hansriezebos/levelup.git", credentialsId: 'fd2241d2-19b7-4263-a222-3d0f0de53d2a	'
+    
+        sh "git rev-parse HEAD > .git/commit-id"
+        def commit_id = readFile('.git/commit-id').trim()
+        println commit_id
+    
+        stage "build"
+        def app = docker.build "my-project-name"
+    
+        stage "publish"
+        app.push 'master'
+        app.push "${commit_id}"
     }
 }
