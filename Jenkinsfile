@@ -22,9 +22,7 @@ jdk 'JDK8'
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
                     input message:'Approve deployment?', submitter: 'hans'
-                    retry(3) {
-                        sh 'mvn test'
-                    }
+                    mvn install
                 }
             }
         }
